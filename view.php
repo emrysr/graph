@@ -36,6 +36,7 @@
 -->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.stack.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/graph/vis.helper.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/misc/clipboard.js"></script>
 <link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
 <link href="<?php echo $path; ?>Modules/graph/graph.css" rel="stylesheet">
@@ -206,6 +207,10 @@
                 </select>
             </div> 
             
+            <div class="input-append"><!-- just to match the styling of the other items -->
+                <button onclick="copyToClipboardCustomMsg(document.getElementById('csv'), 'copy-csv-feedback','Copied')" class="csvoptions btn" id="copy-csv" type="button">Copy <i class="icon-share-alt"></i></button>
+            </div>
+            <span id="copy-csv-feedback" class="csvoptions"></span>
             
             <textarea id="csv" style="width:98%; height:500px; display:none; margin-top:10px"></textarea>
         </div>
