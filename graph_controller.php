@@ -68,11 +68,11 @@ function graph_controller()
     }
     
     else if ($group && $route->action=="groupgraph") {
-        $result = view("Modules/graph/group_view.php", array("session" => $session["write"], 'group_support' => 1));
+        $result = view("Modules/graph/view.php", array("session" => $session["write"], 'group_support' => 1));
     }
 
     else {
-        $result = view("Modules/graph/view.php", array("session" => $session["write"]));
+        $result = view("Modules/graph/view.php", array("session" => $session["write"], 'group_support' => 0));
     }
 
     return array('content' => $result, 'fullwidth' => true);
