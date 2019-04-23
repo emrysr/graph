@@ -227,47 +227,7 @@ function graph_init_editor()
 {
     if (!session && !userid) feeds = feedlist;
 
-    var numberoftags = 0;
-    feedsbytag = {};
-    for (var z in feeds) {
-        if (feedsbytag[feeds[z].tag]==undefined) {
-            feedsbytag[feeds[z].tag] = [];
-            numberoftags++;
-        }
-        feedsbytag[feeds[z].tag].push(feeds[z]);
-    }
-
-    var out = "";
-    out += "<colgroup>";
-    out += "<col span='1' style='width: 70%;'>";
-    out += "<col span='1' style='width: 15%;'>";
-    out += "<col span='1' style='width: 15%;'>";
-    out += "</colgroup>";
-
-    for (var tag in feedsbytag) {
-       tagname = tag;
-       if (tag=="") tagname = "undefined";
-       out += "<tr class='tagheading' tag='"+tagname+"' style='background-color:#aaa; cursor:pointer'><td style='font-size:12px; padding:4px; padding-left:8px; font-weight:bold'>"+tagname+"</td><td></td><td></td></tr>";
-       out += "<tbody class='tagbody' tag='"+tagname+"'>";
-       for (var z in feedsbytag[tag])
-       {
-           out += "<tr>";
-           var name = feedsbytag[tag][z].name;
-           if (name.length>20) {
-               name = name.substr(0,20)+"..";
-           }
-           out += "<td>"+name+"</td>";
-           out += "<td><input class='feed-select-left' feedid="+feedsbytag[tag][z].id+" type='checkbox'></td>";
-           out += "<td><input class='feed-select-right' feedid="+feedsbytag[tag][z].id+" type='checkbox'></td>";
-           out += "</tr>";
-       }
-       out += "</tbody>";
-    }
-    $("#feeds").html(out);
-
-    if (feeds.length>12 && numberoftags>2) {
-        $(".tagbody").hide();
-    }
+    populate_feed_table();
 
     datetimepickerInit();
 
@@ -624,14 +584,9 @@ function graph_init_editor()
             graph_reloaddraw();
         });
     }
-
-    //******************************************
-    // Actions editor user's feeds
-    // ******************************************/
-    $("body").on("click",".tagheading",function(){
-        var tag = $(this).attr("tag");
-        var e = $(".tagbody[tag='"+tag+"']");
-        if (e.is(":visible")) e.hide(); else e.show();
+    $('body').on('click', '#feeds div.feed-tag', function (e) {
+        var tag = $(this).attr('tag');
+        $('#feeds div.feed[tag="' + tag + '"]').toggle();
     });
 
     //******************************************
@@ -655,13 +610,13 @@ function graph_init_editor()
             var user = $(this).attr('user');
             $('.feed-tag[user="' + user + '"]').toggle();
         });
-        $('body').on('click', '.feed-tag', function () {
+        $('body').on('click', '.feed-tag', function (e) {
+            if (e.target.className != "tag-name") return; // only collapse list on tag name
             var user = $(this).attr('user');
             var tag = $(this).attr('tag');
             $('.feed[user="' + user + '"][tag="' + tag + '"]').toggle();
         });
     }
-
 
     $("#showmissing").click(function(){
         if ($("#showmissing")[0].checked) showmissing = true; else showmissing = false;
@@ -877,6 +832,7 @@ function graph_reload()
         $('#error')
         .show()
         .html('<div class="alert alert-info"><strong>' + title + '</strong> ' + message + '</div>');
+        graph_draw();
         return false;
     }
     if (ids.length > 0) {
@@ -1358,11 +1314,12 @@ function populate_group_table(groupindex) {
             var out = '';
             // Add tags
             var tags_list = [];
+            user.feedslist.sort(function(a, b) { let ret = a.tag.localeCompare(b.tag); if (ret != 0) return ret; return a.name.localeCompare(b.name); });
             user.feedslist.forEach(function (feed) {
                 if (tags_list.indexOf(feed.tag) == -1) {
                     tags_list.push(feed.tag);
                     out += "<div class='feed-tag hide' tag='" + feed.tag + "' user='" + user.username + "'>";
-                    out += feed.tag + "<input class='feed-tag-checkbox-right' type='checkbox' tag='" + feed.tag + "' uid='" + user.userid + "' />" + "<input class='feed-tag-checkbox-left' type='checkbox' tag='" + feed.tag + "' uid='" + user.userid + "' />";
+                    out += "<input class='feed-tag-checkbox-right' type='checkbox' tag='" + feed.tag + "' uid='" + user.userid + "' />" + "<input class='feed-tag-checkbox-left' type='checkbox' tag='" + feed.tag + "' uid='" + user.userid + "' />" + "<div class='tag-name'>" + feed.tag + "</div>";
                     // Add feed tag have the current tag
                     user.feedslist.forEach(function (feed_again) {
                         if (feed_again.tag == feed.tag) {
@@ -1379,6 +1336,29 @@ function populate_group_table(groupindex) {
             $('#group-table').append(out);
         });
     }
+}
+
+function populate_feed_table() {
+    var out = "";
+    var tags_list = [];
+    feeds.sort(function(a, b) { let ret = a.tag.localeCompare(b.tag); if (ret != 0) return ret; return a.name.localeCompare(b.name); });
+    for (var feedid in feeds) {
+        if (tags_list.indexOf(feeds[feedid].tag) == -1) {
+            tags_list.push(feeds[feedid].tag);
+            out += "<div class='feed-tag' tag='" + feeds[feedid].tag + "'>" + feeds[feedid].tag + "</div>";
+            for (var fid in feeds) {
+                if (feeds[fid].tag == feeds[feedid].tag) {
+                    // Add feed tag have the current tag
+                    out += "<div class='feed user-feed' tag='" + feeds[fid].tag + "'>";
+                    out += "<div class='feed-select'><input class='feed-select-right' tag='" + feeds[fid].tag + "' feedid='" + feeds[fid].id + "' type='checkbox' /></div>";
+                    out += "<div class='feed-select'><input class='feed-select-left' tag='" + feeds[fid].tag + "' feedid='" + feeds[fid].id + "' type='checkbox' /></div>";
+                    out += "<div class='feed-name' title='" + feeds[fid].name + "'>" + feeds[fid].name + "</div>";
+                    out += "</div>"; // feed
+                }
+            }
+        }
+    }
+    $('#feeds').html(out);
 }
 
 function get_group_index(groupid) {

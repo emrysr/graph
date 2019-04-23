@@ -79,8 +79,8 @@
         <div id='vis-mode-user' style="padding-left:10px;">
             <h3><?php echo _('Feeds') ?></h3>
             <div style="overflow-x: hidden; background-color:#f3f3f3; width:100%">
-                <table class="table" id="feeds">
-                </table>
+                <div class="table" id="feeds">
+                </div>
             </div>
         </div>
 
