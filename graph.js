@@ -28,6 +28,8 @@ var previousPoint = 0;
 
 var active_histogram_feed = 0;
 
+var _TIMEZONE = null;
+
 $("#info").show();
 if ($("#showmissing")[0]!=undefined) $("#showmissing")[0].checked = showmissing;
 if ($("#showtag")[0]!=undefined) $("#showtag")[0].checked = showtag;
@@ -814,6 +816,11 @@ function graph_reloaddraw() {
     graph_reload();
 }
 
+function graph_changeTimezone(tz) {
+    _TIMEZONE = tz;
+    graph_draw();
+}
+
 function graph_reload()
 {
 
@@ -1106,6 +1113,7 @@ function build_rows(rows) {
 
 function graph_draw()
 {
+    var timezone = _TIMEZONE || "browser";
     var options = {
         lines: { fill: false },
         xaxis: {
@@ -1408,6 +1416,7 @@ function printcsv()
     var line = [];
     var lastvalue = [];
     var start_time = feedlist[0].data[0][0];
+    var end_time = feedlist[feedlist.length-1].data[feedlist[feedlist.length-1].data.length-1][0];
     var showName=false;
     var showTag=false;
 
@@ -1485,6 +1494,26 @@ function printcsv()
         }
     }
     $("#csv").val(csvout);
+
+    // populate download form
+    for (f in feedlist) {
+        var meta = feedlist[f];
+
+        $("[data-download]").each(function(i,elem){
+            $form = $(this);
+            var path = $form.find('[data-path]').val();
+            var action = $form.find('[data-action]').val();
+            var format = $form.find('[data-format]').val();
+            $form.attr('action', path + action + '.' + format);
+            $form.find('[name="ids"]').val(meta.id);
+            $form.find('[name="start"]').val(start_time);
+            $form.find('[name="end"]').val(end_time);
+            $form.find('[name="headers"]').val('names');
+            $form.find('[name="timeformat"]').val(csvtimeformat);
+            $form.find('[name="interval"]').val(view.interval);
+            $form.find('[name="nullvalues"]').val(csvnullvalues);
+        });
+    }
 }
 
 //----------------------------------------------------------------------------------------
