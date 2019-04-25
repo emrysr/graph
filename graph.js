@@ -1604,21 +1604,32 @@ $("#graph-select").change(function() {
 });
 
 function load_saved_graph(name) {
+    console.log(name);
     $("#graph-name").val(name);
     $("#graph-delete").show();
-    var index = graph_index_from_name(name);
-
-    $("#graph-id").html(savedgraphs[index].id);
+    var graph = (group_support ? graph_from_name(name) : savedgraphs[graph_index_from_name(name)]);
+    $("#graph-id").html(graph.id);
 
     // view settings
-    view.start = savedgraphs[index].start;
-    view.end = savedgraphs[index].end;
-    view.interval = savedgraphs[index].interval;
-    view.limitinterval = savedgraphs[index].limitinterval;
-    view.fixinterval = savedgraphs[index].fixinterval;
-    floatingtime = savedgraphs[index].floatingtime,
-    yaxismin = savedgraphs[index].yaxismin;
-    yaxismax = savedgraphs[index].yaxismax;
+    view.start = graph.start;
+    view.end = graph.end;
+    view.interval = graph.interval;
+    view.limitinterval = graph.limitinterval;
+    view.fixinterval = graph.fixinterval;
+    floatingtime = graph.floatingtime;
+    yaxismin = graph.yaxismin;
+    yaxismax = graph.yaxismax;
+
+    // CSV display settings
+    csvtimeformat = (typeof(graph.csvtimeformat)==="undefined" ? "datestr" : graph.csvtimeformat);
+    csvnullvalues = (typeof(graph.csvnullvalues)==="undefined" ? "show" : graph.csvnullvalues);
+    csvheaders = (typeof(graph.csvheaders)==="undefined" ? "showNameTag" : graph.csvheaders);
+    var tmpCsv = (typeof(graph.showcsv)==="undefined" ? "0" : graph.showcsv.toString());
+
+    // show settings
+    showmissing = graph.showmissing;
+    showtag = graph.showtag;
+    showlegend = graph.showlegend;
 
     if (group_support) {
         // visualization mode
@@ -1634,19 +1645,8 @@ function load_saved_graph(name) {
         }
     }
 
-    // CSV display settings
-    csvtimeformat = (typeof(savedgraphs[index].csvtimeformat)==="undefined" ? "datestr" : savedgraphs[index].csvtimeformat);
-    csvnullvalues = (typeof(savedgraphs[index].csvnullvalues)==="undefined" ? "show" : savedgraphs[index].csvnullvalues);
-    csvheaders = (typeof(savedgraphs[index].csvheaders)==="undefined" ? "showNameTag" : savedgraphs[index].csvheaders);
-    var tmpCsv = (typeof(savedgraphs[index].showcsv)==="undefined" ? "0" : savedgraphs[index].showcsv.toString());
-
-    // show settings
-    showmissing = savedgraphs[index].showmissing;
-    showtag = savedgraphs[index].showtag;
-    showlegend = savedgraphs[index].showlegend;
-
     // feedlist
-    feedlist = savedgraphs[index].feedlist;
+    feedlist = graph.feedlist;
 
     if (floatingtime) {
         var timewindow = view.end - view.start;
@@ -1686,9 +1686,15 @@ $("#graph-name").keyup(function(){
 
 $("#graph-delete").click(function() {
     var name = $("#graph-name").val();
-    var updateindex = graph_index_from_name(name);
-    if (updateindex!=-1) {
-        graph_delete(savedgraphs[updateindex].id);
+    if (group_support) {
+        var graph = graph_from_name(name);
+        var id = (graph != null ? graph.id : -1);
+    } else {
+        var updateindex = graph_index_from_name(name);
+        var id = (updateindex != -1 ? savedgraphs[updateindex].id : -1);
+    }
+    if (id != -1) {
+        graph_delete(id);
         feedlist = [];
         graph_reloaddraw();
         $("#graph-name").val("");
@@ -1729,24 +1735,64 @@ $("#graph-save").click(function() {
         feedlist: JSON.parse(JSON.stringify(feedlist))
     };
 
-    var updateindex = graph_index_from_name(name);
+    if (!group_support) {
+        var updateindex = graph_index_from_name(name);
 
-    // Update or append
-    if (updateindex==-1) {
-        savedgraphs.push(graph_to_save);
-        graph_create(graph_to_save);
+        // Update or append
+        if (updateindex==-1) {
+            savedgraphs.push(graph_to_save);
+            graph_create(graph_to_save);
+        } else {
+            graph_to_save.id = savedgraphs[updateindex].id;
+            savedgraphs[updateindex] = graph_to_save;
+            graph_update(graph_to_save);
+        }
     } else {
-        graph_to_save.id = savedgraphs[updateindex].id;
-        savedgraphs[updateindex] = graph_to_save;
-        graph_update(graph_to_save);
+        if (vis_mode == 'groups') {
+            graph_to_save.source = 'groups';
+            var group_index = $('#select-group').val();
+            graph_to_save.groupid = groups[group_index].groupid;
+        }
+
+        var graph = graph_from_name(name);
+        // Update or append
+        if (graph == null) {
+            graph_create(graph_to_save);
+        } else {
+            graph_to_save.id = graph.id;
+            graph_update(graph_to_save);
+        }
+        savedgraphs = graph_load_savedgraphs();
     }
 
     $("#graph-select").val(name);
 });
 
 function graph_exists(name) {
-    if (graph_index_from_name(name)!=-1) return true;
+    if (!group_support) {
+        if (graph_index_from_name(name)!=-1) return true;
+        return false;
+    }
+    if (graph_from_name(name) != null)
+        return true;
     return false;
+}
+
+function graph_from_name(name) {
+    // Search in user's graphs
+    for (var z in savedgraphs.user) {
+        if (savedgraphs.user[z].name == name)
+            return savedgraphs.user[z];
+    }
+    // Search in groups graphs
+    if (savedgraphs.groups != undefined) {
+        for (var groupname in savedgraphs.groups) {
+            for (var z in savedgraphs.groups[groupname])
+                if (savedgraphs.groups[groupname][z].name == name)
+                    return savedgraphs.groups[groupname][z];
+        }
+    }
+    return null;
 }
 
 function graph_index_from_name(name) {
@@ -1759,31 +1805,62 @@ function graph_index_from_name(name) {
 
 function graph_load_savedgraphs(fn=false)
 {
-    $.ajax({
-        url: path+"/graph/getall"+apikeystr,
-        async: true,
-        dataType: "json",
-        success: function(result) {
-            savedgraphs = result.user;
+    if (!group_support) {
+        $.ajax({
+            url: path+"/graph/getall"+apikeystr,
+            async: true,
+            dataType: "json",
+            success: function(result) {
+                savedgraphs = result.user;
 
-            var out = "<option>" + _lang['Select graph'] + ":</option>";
-            for (var z in savedgraphs) {
-               var name = savedgraphs[z].name;
-               out += "<option>"+name+"</option>";
+                var out = "<option>" + _lang['Select graph'] + ":</option>";
+                for (var z in savedgraphs) {
+                var name = savedgraphs[z].name;
+                out += "<option>"+name+"</option>";
+                }
+                $("#graph-select").html(out);
+                if (typeof fn === 'function') fn();
             }
-            $("#graph-select").html(out);
-            if (fn) fn();
-        }
-    });
+        });
+    } else {
+        $.ajax({
+            url: path+"/graph/getall",
+            async: true,
+            dataType: "json",
+            success: function(result) {
+                savedgraphs = result;
+
+                var out = "<option>Select graph:</option>";
+                // User's graphs
+                if (savedgraphs.user.length > 0) {
+                    out += "<optgroup label='Your graphs'>";
+                    for (var z in savedgraphs.user) {
+                        var name = savedgraphs.user[z].name;
+                        out += "<option>" + name + "</option>";
+                    }
+                    out += '</optgroup>';
+                }
+                // Group graphs
+                if (savedgraphs.groups != undefined) {
+                    for (var group_name in savedgraphs.groups) {
+                        out += "<optgroup label='Group:" + group_name + " '>";
+                        for (var z in savedgraphs.groups[group_name])
+                            out += "<option>" + savedgraphs.groups[group_name][z].name + "</option>";
+                        out += "</optgroup>";
+                    }
+                }
+                $("#graph-select").html(out);
+                if (typeof fn === 'function') fn();
+            }
+        });
+    }
 }
 function graph_create(data) {
-
     // Clean feedlist of data and stats that dont need to be saved
     for (var i in data.feedlist) {
         delete data.feedlist[i].data
         delete data.feedlist[i].stats;
     }
-
     // Group graph
     if (group_support && (data.source == 'groups')) {
         var url = path + "/graph/creategroupgraph";
@@ -1797,16 +1874,20 @@ function graph_create(data) {
     // Save
     $.ajax({
         method: "POST",
-        url: path+"/graph/create",
+        url: url,
         data: data,
         async: true,
         dataType: "json",
         success: function(result) {
-            if (!result.success) alert("ERROR: "+result.message);
-        }
+            if (result.success) {
+                $("#graph-delete").show();
+            } else {
+                $("#graph-delete").hide();
+                alert("ERROR: "+result.message);
+            }
+        },
+        complete: graph_load_savedgraphs
     });
-
-    graph_load_savedgraphs();
 }
 
 function graph_update(data) {
@@ -1828,13 +1909,14 @@ function graph_update(data) {
     // Save
     $.ajax({
         method: "POST",
-        url: path+"/graph/update",
+        url: url,
         data: data_string,
         async: true,
         dataType: "json",
         success: function(result) {
             if (!result.success) alert("ERROR: "+result.message);
-        }
+        },
+        complete: graph_load_savedgraphs
     });
 }
 
@@ -1852,10 +1934,9 @@ function graph_delete(id) {
         dataType: "json",
         success: function(result) {
             if (!result.success) alert("ERROR: "+result.message);
-        }
+        },
+        complete: graph_load_savedgraphs
     });
-
-    graph_load_savedgraphs();
 }
 
 function is_group_graph(id) {
@@ -1899,22 +1980,19 @@ function sidebar_resize() {
 
 // ----------------------------------------------------------------------------------------
 function load_feed_selector() {
-    for (var z in feeds) {
-        var feedid = feeds[z].id;
-        $(".feed-select-left[feedid="+feedid+"]")[0].checked = false;
-        $(".feed-select-right[feedid="+feedid+"]")[0].checked = false;
-    }
+    $(".feed-select-left").prop('checked','');
+    $(".feed-select-right").prop('checked','');
 
     for (var z=0; z<feedlist.length; z++) {
         var feedid = feedlist[z].id;
         var tag = feedlist[z].tag;
         if (tag=="") tag = "undefined";
         if (feedlist[z].yaxis == 1) {
-            $(".feed-select-left[feedid="+feedid+"]")[0].checked = true;
+            $(".feed-select-left[feedid="+feedid+"]").prop('checked','checked');
             $(".tagbody[tag='"+tag+"']").show();
         }
         if (feedlist[z].yaxis == 2) {
-            $(".feed-select-right[feedid="+feedid+"]")[0].checked = true;
+            $(".feed-select-right[feedid="+feedid+"]").prop('checked','checked');
             $(".tagbody[tag='"+tag+"']").show();
         }
         if (group_support) {
