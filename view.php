@@ -286,7 +286,7 @@
             </div>
 
             <div id="download-buttons" class="csvoptions btn-group input-prepend">
-                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                <a class="btn dropdown-toggle" data-toggle="dropdown">
                     <?php echo _('Download') ?>
                     <span class="caret" style="border-top-color:black!important"></span>
                 </a>
