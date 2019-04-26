@@ -257,6 +257,7 @@ function graph_init_editor()
 
         if (!feeds.length && groups.totalfeeds) {
             $("[name='vis-mode-toggle']").bootstrapSwitch('state', false);
+            vis_mode = 'groups';
             $('#vis-mode-groups').show();
             $('#vis-mode-user').hide();
             $('#vis-mode-toggle').hide();
