@@ -86,7 +86,7 @@
 
         <?php if ($group_support) { ?>
         <div id='vis-mode-groups' class='hide' style="padding-left:10px;">
-            <h3><?php echo _('Groups') ?></h3>
+            <h3 id="groups-heading"><?php echo _('Groups') ?></h3>
             <select id='select-group'></select>
             <div style="overflow-x: hidden; background-color:#f3f3f3; width:100%">
                 <div id='group-table' class='table'></div>
@@ -392,8 +392,10 @@
                 }});
             if (groups.length === 0)
                 group_support = false; // Disable group support
-            else
+            else {
                 $('#vis-mode-toggle').show();
+                groups.totalfeeds = groups.reduce(function(acc, cur) { return acc + cur.users.reduce(function(acc, cur) { return acc + cur.totalfeeds; }, 0) }, 0);
+            }
         }
     } else if (userid) {
         $.ajax({

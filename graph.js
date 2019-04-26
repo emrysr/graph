@@ -238,6 +238,12 @@ function graph_init_editor()
         groups.forEach(function (group, index) {
             $('#select-group').append('<option value=' + index + '>' + group.name + '</option>');
         });
+        if (groups.length == 1) {
+            $('#select-group').hide();
+            $('#groups-heading').html(groups[0].name);
+        } else {
+            $('#select-group').show();
+        }
         populate_group_table(0);
         if (!groups[0] || (groups[0].role != 1 && groups[0].role != 2)) {
             $('#graph-save').hide();
@@ -246,6 +252,13 @@ function graph_init_editor()
         else {
             $('#graph-save').show();
             $('#graph-delete').show();
+        }
+
+        if (!feeds.length && groups.totalfeeds) {
+            $("[name='vis-mode-toggle']").bootstrapSwitch('state', false);
+            $('#vis-mode-groups').show();
+            $('#vis-mode-user').hide();
+            $('#vis-mode-toggle').hide();
         }
     }
 
