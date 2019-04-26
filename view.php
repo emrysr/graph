@@ -603,7 +603,7 @@
             })
             .then (function() {
                 let browser_tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-                $browser_timezone.val(browser_tz).text('Browser: ' + browser_tz + ' ('+ timezones[browser_tz].label + ')');
+                $browser_timezone.val(browser_tz).text('Browser: ' + browser_tz + (timezones[browser_tz] ? ' ('+ timezones[browser_tz].label + ')' : ''));
             })
         })
 

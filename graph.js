@@ -239,7 +239,7 @@ function graph_init_editor()
             $('#select-group').append('<option value=' + index + '>' + group.name + '</option>');
         });
         populate_group_table(0);
-        if (groups[0].role != 1&&groups[0].role != 2) {
+        if (!groups[0] || (groups[0].role != 1 && groups[0].role != 2)) {
             $('#graph-save').hide();
             $('#graph-delete').hide();
         }
@@ -1304,7 +1304,7 @@ function getfeedfromgroups(feedid) {
 
 function populate_group_table(groupindex) {
     $('#group-table').html('');
-    if (groups[groupindex].users.success == false) { // when user role is "member"
+    if (!groups[groupindex] || groups[groupindex].users.success == false) { // when user role is "member"
         void(0); // do nothing
     }
     else {
@@ -1343,6 +1343,7 @@ function populate_feed_table() {
     var tags_list = [];
     feeds.sort(function(a, b) { let ret = a.tag.localeCompare(b.tag); if (ret != 0) return ret; return a.name.localeCompare(b.name); });
     for (var feedid in feeds) {
+        if (!feeds[feedid].name) continue;
         if (tags_list.indexOf(feeds[feedid].tag) == -1) {
             tags_list.push(feeds[feedid].tag);
             out += "<div class='feed-tag' tag='" + feeds[feedid].tag + "'>" + feeds[feedid].tag + "</div>";
