@@ -241,6 +241,7 @@ function graph_init_editor()
         if (groups.length == 1) {
             $('#select-group').hide();
             $('#groups-heading').html(groups[0].name);
+            $('#groups-heading').css('font-size', 17.5);
         } else {
             $('#select-group').show();
         }
@@ -1856,7 +1857,7 @@ function graph_load_savedgraphs(fn=false)
                 // Group graphs
                 if (savedgraphs.groups != undefined) {
                     for (var group_name in savedgraphs.groups) {
-                        out += "<optgroup label='Group:" + group_name + " '>";
+                        out += "<optgroup label='Group: " + group_name + " '>";
                         for (var z in savedgraphs.groups[group_name])
                             out += "<option>" + savedgraphs.groups[group_name][z].name + "</option>";
                         out += "</optgroup>";
