@@ -1310,7 +1310,6 @@ function populate_group_table(groupindex) {
     else {
         var users = groups[groupindex].users;
         users.forEach(function (user, index) {
-            $('#group-table').append('<div class="user-name" user="' + user.username + '">' + user.username + '</div>');
             var out = '';
             // Add tags
             var tags_list = [];
@@ -1333,7 +1332,7 @@ function populate_group_table(groupindex) {
                     out += "</div>";
                 }
             });
-            $('#group-table').append(out);
+            $('#group-table').append((out.length ? '<div class="user-name" user="' + user.username + '">' + user.username + '</div>' + out : ''));
         });
     }
 }
