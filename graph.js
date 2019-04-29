@@ -1628,6 +1628,7 @@ function load_saved_graph(name) {
     $("#graph-name").val(name);
     $("#graph-delete").show();
     var graph = (group_support ? graph_from_name(name) : savedgraphs[graph_index_from_name(name)]);
+    if (!graph) return;
     $("#graph-id").html(graph.id);
 
     // view settings
