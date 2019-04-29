@@ -189,6 +189,7 @@ function graph_controller()
         }
     }
     else {
+        $route->sidebar = view("Modules/graph/Views/sidebar.php",array());
         $result = view("Modules/graph/view.php", array("session" => $session["write"], 'group_support' => 0));
     }
 

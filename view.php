@@ -9,8 +9,7 @@
     http://openenergymonitor.org
     */
 
-    global $path, $embed;
-    global $fullwidth;
+    global $path, $embed, $sidebarCollapsed, $fullwidth, $menucollapses;
     $fullwidth = true;
     $v = 2; // force js & css cache reload
 
@@ -18,6 +17,8 @@
         $group_support = 0;
 
     $userid = 0;
+    $v = 2;
+    
     if (isset($_GET['userid'])) $userid = (int) $_GET['userid'];
 
     $feedidsLH = "";
@@ -41,10 +42,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.togglelegend.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.togglelegend.min.js"></script>
-<!--
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/flot.min.js"></script>
--->
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.resize.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.stack.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/graph/vis.helper.js?v=<?php echo $v; ?>"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/misc/clipboard.js?v=<?php echo $v; ?>"></script>
@@ -56,67 +54,13 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
 <link href="<?php echo $path; ?>Modules/graph/graph.css?v=<?php echo $v; ?>" rel="stylesheet">
 
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/graph/Lib/date.js"></script>
-<script>
-        var timezones_ready = false;
-        timezoneJS.timezone.zoneFileBasePath = '<?php echo $path; ?>Modules/graph/Lib/tz';
-        timezoneJS.timezone.defaultZoneFile = ['europe'];
-        timezoneJS.timezone.init({callback: function() {
-            timezones_ready = true;
-        }});
-</script>
-
-<div id="wrapper">
-    <div id="sidebar-wrapper">
-        <div style="padding-left:10px;">
-            <div id="sidebar-close" style="float:right; cursor:pointer; padding:10px;"><i class="icon-remove"></i></div>
-            <?php if ($group_support) { ?>
-            <div id="vis-mode-toggle" class="hide">
-                <input type="checkbox" name="vis-mode-toggle" data-on-text="User" data-off-text="Groups" data-label-text="Mode" data-inverse="true" data-on-color="default" data-off-color="default" checked>
-            </div>
-            <?php } ?>
-        </div>
-        <div id='vis-mode-user' style="padding-left:10px;">
-            <h3><?php echo _('Feeds') ?></h3>
-            <div style="overflow-x: hidden; background-color:#f3f3f3; width:100%">
-                <div class="table" id="feeds">
-                </div>
-            </div>
-        </div>
-
-        <?php if ($group_support) { ?>
-        <div id='vis-mode-groups' class='hide' style="padding-left:10px;">
-            <h3 id="groups-heading"><?php echo _('Groups') ?></h3>
-            <select id='select-group'></select>
-            <div style="overflow-x: hidden; background-color:#f3f3f3; width:100%">
-                <div id='group-table' class='table'></div>
-            </div>
-        </div>
-        <?php } ?>
-
-        <div id="mygraphs" style="padding:10px;">
-            <h4><?php echo _('My Graphs') ?></h4>
-
-            <select id="graph-select" style="width:215px">
-            </select>
-
-            <br><br>
-            <b><?php echo _('Graph Name') ?>:</b><br>
-            <input id="graph-name" type="text" style="width:200px" />
-            <div id="selected-graph-id" style="font-size:10px"><?php echo _('Selected graph id') ?>: <span id="graph-id"><?php echo _('None selected') ?></span></div>
-            <button id="graph-delete" class="btn" style="display:none"><?php echo _('Delete') ?></button>
-            <button id="graph-save" class="btn"><?php echo _('Save') ?></button>
-        </div>
+<div id="page-content-wrapper" style="max-width:1280px">
+    <div style="display: flex; align-items: center;">
+        <h3><?php echo _('Data viewer'); ?></h3>
     </div>
-
-    <div id="page-content-wrapper" style="max-width:1280px">
-
-        <h3><?php echo _('Data viewer') ?></h3>
-
-        <div id="error" style="display:none"></div>
-
+    <div id="graph-wrapper">
         <div id="navigation" style="padding-bottom:5px;">
-            <button class="btn" id="sidebar-open"><i class="icon-list"></i></button>
+            <!-- <button class="btn<?php if(!$fullwidth) echo ' collapsed' ?>" href="#" data-toggle="slide-collapse" data-target="#sidebar" title="<?php echo _('Open sidebar') ?>"><i class="icon-list"></i></button> -->
             <button class='btn graph_time' type='button' time='1' title="<?php echo _('Day') ?>"><?php echo _('D') ?></button>
             <button class='btn graph_time' type='button' time='7' title="<?php echo _('Week') ?>"><?php echo _('W') ?></button>
             <button class='btn graph_time' type='button' time='30' title="<?php echo _('Month') ?>"><?php echo _('M') ?></button>
@@ -125,12 +69,12 @@
             <button id='graph_zoomout' class='btn' title="<?php echo _('Zoom Out') ?>">-</button>
             <button id='graph_left' class='btn' title="<?php echo _('Earlier') ?>"><</button>
             <button id='graph_right' class='btn' title="<?php echo _('Later') ?>">></button>
-
-            <div class="input-prepend input-append" style="float:right; margin-right:22px">
-            <span class="add-on"><?php echo _('Show') ?></span>
-            <span class="add-on"><?php echo _('missing data') ?>: <input type="checkbox" id="showmissing" style="margin-top:1px" /></span>
-            <span class="add-on"><?php echo _('legend') ?>: <input type="checkbox" id="showlegend" style="margin-top:1px" /></span>
-            <span class="add-on"><?php echo _('feed tag') ?>: <input type="checkbox" id="showtag" style="margin-top:1px" /></span>
+            
+            <div class="input-prepend input-append pull-right">
+                <span class="add-on"><?php echo _('Show') ?></span>
+                <span class="add-on"><label><?php echo _('missing data') ?>: <input type="checkbox" id="showmissing"></label></span>
+                <span class="add-on"><label><label><?php echo _('legend') ?>: <input type="checkbox" id="showlegend"></label></span>
+                <span class="add-on"><label><?php echo _('feed tag') ?>: <input type="checkbox" id="showtag"></label></span>
             </div>
 
             <div style="clear:both"></div>
@@ -160,16 +104,16 @@
             <div class="input-prepend input-append" style="padding-right:5px">
                 <span class="add-on" style="width:50px"><?php echo _('Start') ?></span>
                 <span id="datetimepicker1">
-                  <input id="request-start" data-format="dd/MM/yyyy hh:mm:ss" type="text" style="width:140px" />
-                  <span class="add-on"><i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
+                    <input id="request-start" data-format="dd/MM/yyyy hh:mm:ss" type="text" style="width:140px" />
+                    <span class="add-on"><i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
                 </span>
             </div>
 
             <div class="input-prepend input-append" style="padding-right:5px">
                 <span class="add-on" style="width:50px"><?php echo _('End') ?></span>
                 <span id="datetimepicker2">
-                  <input id="request-end" data-format="dd/MM/yyyy hh:mm:ss" type="text" style="width:140px" />
-                  <span class="add-on"><i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
+                    <input id="request-end" data-format="dd/MM/yyyy hh:mm:ss" type="text" style="width:140px" />
+                    <span class="add-on"><i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
                 </span>
             </div>
 
@@ -188,8 +132,8 @@
 
                 <span class="fixed-interval-options">
                     <input id="request-interval" type="text" style="width:60px" />
-                    <span class="add-on"><?php echo _('Fix') ?> <input id="request-fixinterval" type="checkbox" style="margin-top:1px" /></span>
-                    <span class="add-on"><?php echo _('Limit to data interval') ?> <input id="request-limitinterval" type="checkbox" style="margin-top:1px" /></span>
+                    <span class="add-on"><label><?php echo _('Fix') ?> <input id="request-fixinterval" type="checkbox"></label></span>
+                    <span class="add-on"><label><?php echo _('Limit to data interval') ?> <input id="request-limitinterval" type="checkbox"></label></span>
                 </span>
             </div>
             <div class="input-prepend input-append" style="padding-right:5px">
@@ -332,7 +276,7 @@
 
             <textarea id="csv" style="width:98%; height:500px; display:none; margin-top:10px"></textarea>
         </div>
-    </div>
+    </div> 
 </div>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/graph/graph.js?v=<?php echo $v; ?>"></script>
@@ -498,11 +442,7 @@
             }
         }
     }
-
-    /*********************************************
-     Initialitation
-     *********************************************/
-    sidebar_resize();
+    
     graph_init_editor();
 
     load_feed_selector();
@@ -571,11 +511,10 @@
             event.preventDefault();
             event.target.querySelector('.caret').classList.toggle('open');
             $('#tables').collapse('toggle');
-            console.log(event.type)
         })
     });
-</script>
 
+</script>
 
 <script>
     $(function () {

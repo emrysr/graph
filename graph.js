@@ -95,7 +95,6 @@ $('#placeholder').bind("plothover", function (event, pos, item) {
 });
 
 $(window).resize(function(){
-    if (!embed) sidebar_resize();
     graph_resize();
     graph_draw();
 });
@@ -114,7 +113,6 @@ function graph_resize() {
     placeholder_bound.height(height-top_offset);
     placeholder.height(height-top_offset);
 }
-
 function datetimepickerInit()
 {
     $("#datetimepicker1").datetimepicker({
@@ -354,11 +352,13 @@ function graph_init_editor()
         graph_draw();
     });
 
-    //******************************************
-    // Actions ticking checkboxes in editor
-    // ******************************************/
-    $("body").on("click",".feed-select-left",function(e){
-        var feedid = $(this).attr("feedid");
+    $("body").on("click",".feed-title",function(event){
+        event.preventDefault();
+        var feedid = $(this).data("feedid");
+        $('.feed-select-left[data-feedid="' + feedid + '"]').click();
+    });
+    $("body").on("click",".feed-select-left",function(){
+        var feedid = $(this).data("feedid");
         var checked = $(this)[0].checked;
         var feed_from_group = false;
 
@@ -373,7 +373,7 @@ function graph_init_editor()
                 var tag = $(this).attr('tag');
                 var any_checked = false
                 var any_unchecked = false;
-                $(".feed-select-left[tag='" + tag + "'][userid='" + userid + "']").each(function () {
+                $(".feed-select-left[tag='" + tag + "'][data-userid='" + userid + "']").each(function () {
                     if ($(this)[0].checked == false)
                         any_unchecked = true;
                     else
@@ -396,7 +396,7 @@ function graph_init_editor()
                } else {
                    feedlist[z].yaxis = 1;
                    loaded = true;
-                   $(".feed-select-right[feedid="+feedid+"]")[0].checked = false;
+                   $(".feed-select-right[data-feedid="+feedid+"]")[0].checked = false;
                }
            }
         }
@@ -411,7 +411,7 @@ function graph_init_editor()
             var tag = $(this).attr('tag');
             var any_checked = false
             var any_unchecked = false;
-            $(".feed-select-left[tag='" + tag + "'][userid='" + userid + "']").each(function () {
+            $(".feed-select-left[tag='" + tag + "'][data-userid='" + userid + "']").each(function () {
                 if ($(this)[0].checked == false)
                     any_unchecked = true;
                 else
@@ -420,7 +420,7 @@ function graph_init_editor()
             if (any_checked == true && any_unchecked == false) { // all checked
                 $('.feed-tag-checkbox-left[tag="' + tag + '"][uid="' + userid + '"]').prop('checked', 'checked').prop("indeterminate", false);
                 $('.feed-tag-checkbox-right[tag="' + tag + '"][uid="' + userid + '"]').prop('checked', '').prop("indeterminate", false);
-                $('.feed-select-right[tag="' + tag + '"][userid="' + userid + '"]').prop('checked', '');
+                $('.feed-select-right[tag="' + tag + '"][data-userid="' + userid + '"]').prop('checked', '');
             }
             else if (any_checked == false && any_unchecked == true) { // none checked
                 $('.feed-tag-checkbox-left[tag="' + tag + '"][uid="' + userid + '"]').prop('checked', '').prop("indeterminate", false);
@@ -430,7 +430,7 @@ function graph_init_editor()
                 // the other column
                 var any_checked = false
                 var any_unchecked = false;
-                $(".feed-select-right[tag='" + tag + "'][userid='" + userid + "']").each(function () {
+                $(".feed-select-right[tag='" + tag + "'][data-userid='" + userid + "']").each(function () {
                     if ($(this)[0].checked == false)
                         any_unchecked = true;
                     else
@@ -447,8 +447,8 @@ function graph_init_editor()
         }
     });
 
-    $("body").on("click",".feed-select-right",function(e){
-        var feedid = $(this).attr("feedid");
+    $("body").on("click",".feed-select-right",function(){
+        var feedid = $(this).data("feedid");
         var checked = $(this)[0].checked;
         var feed_from_group = false;
 
@@ -469,7 +469,7 @@ function graph_init_editor()
                } else {
                    feedlist[z].yaxis = 2;
                    loaded = true;
-                   $(".feed-select-left[feedid="+feedid+"]")[0].checked = false;
+                   $(".feed-select-left[data-feedid="+feedid+"]")[0].checked = false;
                }
            }
         }
@@ -484,7 +484,7 @@ function graph_init_editor()
             var tag = $(this).attr('tag');
             var any_checked = false
             var any_unchecked = false;
-            $(".feed-select-right[tag='" + tag + "'][userid='" + userid + "']").each(function () {
+            $(".feed-select-right[tag='" + tag + "'][data-userid='" + userid + "']").each(function () {
                 if ($(this)[0].checked == false)
                     any_unchecked = true;
                 else
@@ -493,7 +493,7 @@ function graph_init_editor()
             if (any_checked == true && any_unchecked == false) { // all checked
                 $('.feed-tag-checkbox-right[tag="' + tag + '"][uid="' + userid + '"]').prop('checked', 'checked').prop("indeterminate", false);
                 $('.feed-tag-checkbox-left[tag="' + tag + '"][uid="' + userid + '"]').prop('checked', '').prop("indeterminate", false);
-                $('.feed-select-left[tag="' + tag + '"][userid="' + userid + '"]').prop('checked', '');
+                $('.feed-select-left[tag="' + tag + '"][data-userid="' + userid + '"]').prop('checked', '');
             }
             else if (any_checked == false && any_unchecked == true) { // none checked
                 $('.feed-tag-checkbox-right[tag="' + tag + '"][uid="' + userid + '"]').prop('checked', '').prop("indeterminate", false);
@@ -503,7 +503,7 @@ function graph_init_editor()
                 // the other column
                 var any_checked = false
                 var any_unchecked = false;
-                $(".feed-select-left[tag='" + tag + "'][userid='" + userid + "']").each(function () {
+                $(".feed-select-left[tag='" + tag + "'][data-userid='" + userid + "']").each(function () {
                     if ($(this)[0].checked == false)
                         any_unchecked = true;
                     else
@@ -523,23 +523,23 @@ function graph_init_editor()
     if (group_support) {
         $("body").on("click", ".feed-tag-checkbox-right", function (e) {
             e.stopPropagation();
-            var tag = $(this).attr("tag");
-            var userid = $(this).attr("uid");
+            var tag = $(this).data("tag");
+            var userid = $(this).data("uid");
             var checked = $(this)[0].checked;
             var feed_from_group = true;
 
             // Tick/untick the feeds
             if (checked)
-                $('.feed-select-right[tag="' + tag + '"][userid="' + userid + '"]').prop('checked', 'checked');
+                $('.feed-select-right[data-tag="' + tag + '"][data-userid="' + userid + '"]').prop('checked', 'checked');
             else
-                $('.feed-select-right[tag="' + tag + '"][userid="' + userid + '"]').prop('checked', '');
+                $('.feed-select-right[data-tag="' + tag + '"][data-userid="' + userid + '"]').prop('checked', '');
 
             // Ensure only this checkbox is ticked
             if (checked)
                 $(".feed-tag-checkbox-left").prop('checked', '').prop("indeterminate", false);
 
             // Add/remove the feeds to the feedlist
-            $('.feed-select-right[tag="' + tag + '"][userid="' + userid + '"]').each(function () {
+            $('.feed-select-right[data-tag="' + tag + '"][data-userid="' + userid + '"]').each(function () {
                 var feedid = $(this).attr('feedid');
                 var loaded = false;
                 for (var z in feedlist) {
@@ -564,23 +564,23 @@ function graph_init_editor()
         });
         $("body").on("click", ".feed-tag-checkbox-left", function (e) {
             e.stopPropagation();
-            var tag = $(this).attr("tag");
-            var userid = $(this).attr("uid");
+            var tag = $(this).data("tag");
+            var userid = $(this).data("uid");
             var checked = $(this)[0].checked;
             var feed_from_group = true;
 
             // Tick/untick the feeds
             if (checked)
-                $('.feed-select-left[tag="' + tag + '"][userid="' + userid + '"]').prop('checked', 'checked');
+                $('.feed-select-left[data-tag="' + tag + '"][data-userid="' + userid + '"]').prop('checked', 'checked');
             else
-                $('.feed-select-left[tag="' + tag + '"][userid="' + userid + '"]').prop('checked', '');
+                $('.feed-select-left[data-tag="' + tag + '"][data-userid="' + userid + '"]').prop('checked', '');
 
             // Ensure only this checkbox is ticked
             if (checked)
                 $(".feed-tag-checkbox-right").prop('checked', '').prop("indeterminate", false);
 
             // Add/remove the feeds to the feedlist
-            $('.feed-select-left[tag="' + tag + '"][userid="' + userid + '"]').each(function () {
+            $('.feed-select-left[data-tag="' + tag + '"][data-userid="' + userid + '"]').each(function () {
                 var feedid = $(this).attr('feedid');
                 var loaded = false;
                 for (var z in feedlist) {
@@ -604,9 +604,11 @@ function graph_init_editor()
             graph_reloaddraw();
         });
     }
-    $('body').on('click', '#feeds div.feed-tag', function (e) {
-        var tag = $(this).attr('tag');
-        $('#feeds div.feed[tag="' + tag + '"]').toggle();
+
+    $("body").on("click",".tagheading",function(){
+        var tag = $(this).data("tag");
+        var e = $(".tagbody[data-tag='"+tag+"']");
+        if (e.is(":visible")) e.hide(); else e.show();
     });
 
     //******************************************
@@ -845,15 +847,20 @@ function graph_reload()
     if (requesttype != "interval") {
         data.mode = requesttype;
     }
-
-    if (ids.length + average_ids.length + group_ids.length + group_average_ids.length === 0) {
-        var title = _lang['Select a feed'];
-        var message = _lang['Please select a feed from the Feeds List'];
-        $('#error')
-        .show()
-        .html('<div class="alert alert-info"><strong>' + title + '</strong> ' + message + '</div>');
+   
+    if (ids.length + average_ids.length === 0) {
+        graph_resize();
         graph_draw();
+        var title = _lang['Select a feed'] + '.';
+        var message = _lang['Please select a feed from the Feeds List'];
+        var icon = '<svg class="icon show_chart"><use xlink:href="#icon-show_chart"></use></svg>';
+        var markup = ['<div class="alert alert-info"><a href="#" class="open-sidebar"><strong>',icon,title,'</strong>',message,'</a></div>'].join(' ');
+        $('#error').show()
+        .html(markup);
         return false;
+    } else {
+        $('#graph-wrapper').removeClass('empty');
+        $('#cloned_toggle').remove();
     }
     if (ids.length > 0) {
         // get feedlist data
@@ -1631,6 +1638,10 @@ function load_saved_graph(name) {
     if (!graph) return;
     $("#graph-id").html(graph.id);
 
+    var index = graph_index_from_name(name);
+    
+    if(typeof savedgraphs[index] === 'undefined') return;
+    
     // view settings
     view.start = graph.start;
     view.end = graph.end;
@@ -2004,26 +2015,30 @@ function load_feed_selector() {
     $(".feed-select-left").prop('checked','');
     $(".feed-select-right").prop('checked','');
 
+    for (var z in feeds) {
+        var feedid = feeds[z].id;
+        var left = $(".feed-select-left[data-feedid="+feedid+"]");
+        if (left.length>0) $(".feed-select-left[data-feedid="+feedid+"]")[0].checked = false;
+
+        var right = $(".feed-select-left[data-feedid="+feedid+"]");
+        if (right.length>0) $(".feed-select-right[data-feedid="+feedid+"]")[0].checked = false;
+    }
+    
     for (var z=0; z<feedlist.length; z++) {
         var feedid = feedlist[z].id;
         var tag = feedlist[z].tag;
         if (tag=="") tag = "undefined";
-        if (feedlist[z].yaxis == 1) {
-            $(".feed-select-left[feedid="+feedid+"]").prop('checked','checked');
-            $(".tagbody[tag='"+tag+"']").show();
-        }
-        if (feedlist[z].yaxis == 2) {
-            $(".feed-select-right[feedid="+feedid+"]").prop('checked','checked');
-            $(".tagbody[tag='"+tag+"']").show();
-        }
+
         if (group_support) {
-            $(".feed-select-right[feedid=" + feedid + "]").each(function (index) { // We only need to use on e column, the aim is to reach the parent elements
+            $(".feed-select-right[data-feedid=" + feedid + "]").each(function (index) { // We only need to use on e column, the aim is to reach the parent elements
                 if ($(this).attr('user') != undefined) {
-                    $('.user-feed[user="' + $(this).attr('user') + '"][tag="' + tag + '"]').show();
-                    $('.feed-tag[user="' + $(this).attr('user') + '"]').show();
+                    $('.user-feed[data-user="' + $(this).data('user') + '"][data-tag="' + tag + '"]').show();
+                    $('.feed-tag[data-user="' + $(this).data('user') + '"]').show();
                 }
             });
         }
+        if (feedlist[z].yaxis==1) { $(".feed-select-left[data-feedid="+feedid+"]")[0].checked = true; $(".tagbody[data-tag='"+tag+"']").show(); }
+        if (feedlist[z].yaxis==2) { $(".feed-select-right[data-feedid="+feedid+"]")[0].checked = true; $(".tagbody[data-tag='"+tag+"']").show(); }
     }
 }
 

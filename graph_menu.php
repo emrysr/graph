@@ -1,6 +1,13 @@
 <?php
-    $domain = "messages";
-    bindtextdomain($domain, "Modules/graph/locale");
-    bind_textdomain_codeset($domain, 'UTF-8');
-    $menu_dropdown_config[] = array('name'=> dgettext($domain,"Graphs"), 'icon'=>'icon-retweet', 'path'=>"graph" , 'session'=>"write", 'order' => 25 );
 
+    $menu['sidebar']['emoncms'][] = array(
+        'text' => _("Graphs"),
+        'path' => 'graph',
+        'active'=>'graph',
+        'icon' => 'show_chart',
+        'order' => 2,
+        'li_id' => 'graph-link',
+        'data'=> array('sidebar' => '#sidebar_graph')
+    );
+
+    $menu['sidebar']['includes']['emoncms']['graph'] = view('Modules/graph/Views/sidebar.php',array());
