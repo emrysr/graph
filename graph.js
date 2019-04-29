@@ -1344,14 +1344,14 @@ function populate_group_table(groupindex) {
             user.feedslist.forEach(function (feed) {
                 if (tags_list.indexOf(feed.tag) == -1) {
                     tags_list.push(feed.tag);
-                    out += "<div class='feed-tag hide' tag='" + feed.tag + "' user='" + user.username + "'>";
-                    out += "<input class='feed-tag-checkbox-right' type='checkbox' tag='" + feed.tag + "' uid='" + user.userid + "' />" + "<input class='feed-tag-checkbox-left' type='checkbox' tag='" + feed.tag + "' uid='" + user.userid + "' />" + "<div class='tag-name'>" + feed.tag + "</div>";
+                    out += "<div class='feed-tag hide' data-tag='" + feed.tag + "' data-user='" + user.username + "'>";
+                    out += "<input class='feed-tag-checkbox-right' type='checkbox' data-tag='" + feed.tag + "' uid='" + user.userid + "' />" + "<input class='feed-tag-checkbox-left' type='checkbox' data-tag='" + feed.tag + "' data-uid='" + user.userid + "' />" + "<div class='tag-name'>" + feed.tag + "</div>";
                     // Add feed tag have the current tag
                     user.feedslist.forEach(function (feed_again) {
                         if (feed_again.tag == feed.tag) {
-                            out += "<div class='feed user-feed  hide' user='" + user.username + "' tag='" + feed_again.tag + "' uid='" + user.userid + "'>";
-                            out += "<div class='feed-select'><input class='feed-select-right' source='group' userid='" + user.userid + "' user='" + user.username + "' tag='" + feed_again.tag + "' groupid='" + groups[groupindex].groupid + "' feedid='" + feed_again.id + "' type='checkbox' /></div>";
-                            out += "<div class='feed-select'><input class='feed-select-left' source='group' userid='" + user.userid + "' user='" + user.username + "' tag='" + feed_again.tag + "' groupid='" + groups[groupindex].groupid + "' feedid='" + feed_again.id + "' type='checkbox' /></div>";
+                            out += "<div class='feed user-feed  hide' user='" + user.username + "' data-tag='" + feed_again.tag + "' data-uid='" + user.userid + "'>";
+                            out += "<div class='feed-select'><input class='feed-select-right' data-source='group' data-userid='" + user.userid + "' data-user='" + user.username + "' data-tag='" + feed_again.tag + "' data-groupid='" + groups[groupindex].groupid + "' data-feedid='" + feed_again.id + "' type='checkbox' /></div>";
+                            out += "<div class='feed-select'><input class='feed-select-left' data-source='group' data-userid='" + user.userid + "' data-user='" + user.username + "' data-tag='" + feed_again.tag + "' data-groupid='" + groups[groupindex].groupid + "' data-feedid='" + feed_again.id + "' type='checkbox' /></div>";
                             out += "<div class='feed-name' title='" + feed_again.name + "'>" + feed_again.name + "</div>";
                             out += "</div>"; // feed
                         }
@@ -1372,13 +1372,13 @@ function populate_feed_table() {
         if (!feeds[feedid].name) continue;
         if (tags_list.indexOf(feeds[feedid].tag) == -1) {
             tags_list.push(feeds[feedid].tag);
-            out += "<div class='feed-tag' tag='" + feeds[feedid].tag + "'>" + feeds[feedid].tag + "</div>";
+            out += "<h4 class='xfeed-tag' data-tag='" + feeds[feedid].tag + "'>" + feeds[feedid].tag + "</h4>";
             for (var fid in feeds) {
                 if (feeds[fid].tag == feeds[feedid].tag) {
                     // Add feed tag have the current tag
-                    out += "<div class='feed user-feed' tag='" + feeds[fid].tag + "'>";
-                    out += "<div class='feed-select'><input class='feed-select-right' tag='" + feeds[fid].tag + "' feedid='" + feeds[fid].id + "' type='checkbox' /></div>";
-                    out += "<div class='feed-select'><input class='feed-select-left' tag='" + feeds[fid].tag + "' feedid='" + feeds[fid].id + "' type='checkbox' /></div>";
+                    out += "<div class='xfeed xuser-feed' data-tag='" + feeds[fid].tag + "'>";
+                    out += "<div class='feed-select'><input class='feed-select-right' data-tag='" + feeds[fid].tag + "' data-feedid='" + feeds[fid].id + "' type='checkbox' /></div>";
+                    out += "<div class='feed-select'><input class='feed-select-left' data-tag='" + feeds[fid].tag + "' data-feedid='" + feeds[fid].id + "' type='checkbox' /></div>";
                     out += "<div class='feed-name' title='" + feeds[fid].name + "'>" + feeds[fid].name + "</div>";
                     out += "</div>"; // feed
                 }
