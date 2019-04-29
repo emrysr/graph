@@ -55,13 +55,18 @@ $('#placeholder').bind("plotselected", function (event, ranges)
     graph_reloaddraw();
 });
 function getFeedUnit(id){
-    let unit = ''
-    for(let key in feeds) {
-        if (feeds[key].id == id){
-            unit = feeds[key].unit || ''
+    if ((typeof feeds[id] !== 'undefined') && feeds[id].unit) return feeds[id].unit;
+
+    for (let gid = 0; gid < groups.length; gid++) {
+        for (let uid = 0; uid < groups[gid].users.length; uid++) {
+            let feed = groups[gid].users[uid].feedslist.find(function(item) { return item.id == this; }, id);
+            if (feed) {
+                return feed.unit;
+            }
         }
     }
-    return unit
+
+    return '';
 }
 $('#placeholder').bind("plothover", function (event, pos, item) {
     var item_value;
