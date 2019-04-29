@@ -51,7 +51,6 @@
     position: relative;
 }
 .feed-options-header .caret {
-    /* margin: 1.2em 0 0 .7em; */
     margin: .5em .6em .5em .3em;
     transition: transform 300ms ease-in-out;
     transform: rotate(0deg);
@@ -135,13 +134,26 @@ input.feed-tag-checkbox{
     overflow-x:hidden
 }
 
-.feed-select, .feed-select input, .feed-tag-checkbox-left, .feed-tag-checkbox-right{
+/* .feed-select, .feed-select input, .feed-tag-checkbox-left, .feed-tag-checkbox-right{
     float:right;
+} */
+#feeds [data-toggle="collapse"] .caret{
+    transform: rotate(-90deg);
+    transition: transform .3s ease-in-out;
+}
+#feeds [data-toggle="collapse"].collapsed .caret{
+    transform: rotate(0);
+}
+#feeds .user-feed {
+    transition: background-color .2s linear;
+}
+#feeds .user-feed:hover {
+    background-color: #303030;
 }
 
-.feed-select, .feed-select input{
-    margin:2px;
-    padding:0;
+.feed-select input{
+    margin-top: -.2em;
+    padding: 0;
 }
 input.feed-tag-checkbox-left, input.feed-tag-checkbox-right{
     margin:0 5px;
@@ -188,40 +200,17 @@ input.feed-tag-checkbox-left, input.feed-tag-checkbox-right{
     outline: none;
 }
 
-table#feeds.table thead th{
-    border-top: 4px solid #333;
-    font-weight: normal !important;
-    color: #adadad;
-    cursor: pointer;
-    transition: all .3s ease-in;
-    padding-left: 0;
+#feeds [data-toggle="collapse"].collapsed h4, #feeds .feed-title {
+    opacity: .8;
 }
-table#feeds.table thead th:hover{
-    color: #f8f9fa;
-    text-decoration: underline;
+#feeds [data-toggle="collapse"] h4, #feeds .feed-title:hover {
+    opacity: 1;
 }
-table#feeds.table input[type="checkbox"] { margin: 0 }
-table#feeds.table tbody tr > *{
-    border-color: #444;
-}
-table#feeds.table tbody tr th{
-    cursor: pointer;
-    transition: all .3s ease-in;
-    font-weight: normal;
-}
-table#feeds.table tbody tr th:hover{
-    text-decoration: underline;
-}
-table#feeds.table tbody tr th.feed-title span{
+
+#feeds .feed-title.text-truncate{
     max-width:9em;
 }
 
-table#feeds.table .caret {
-    border-top-color: currentColor !important;
-    display: inline-block;
-    vertical-align: middle;
-    margin-right: .4em;
-}
 #sidebar .include-container{
     padding: .5rem .95rem .5rem .95rem
 }

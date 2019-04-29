@@ -1,4 +1,4 @@
-<table class="table table-condensed" id="feeds"></table>
+<div id="feeds" class="mb-5"></div>
 
 <div id="mygraphs">
     <h4><a href="#" class="collapsed" data-toggle="collapse" data-target="#graph-list">

@@ -61,10 +61,10 @@
     <div id="graph-wrapper">
         <div id="navigation" style="padding-bottom:5px;">
             <!-- <button class="btn<?php if(!$fullwidth) echo ' collapsed' ?>" href="#" data-toggle="slide-collapse" data-target="#sidebar" title="<?php echo _('Open sidebar') ?>"><i class="icon-list"></i></button> -->
-            <button class='btn graph_time' type='button' time='1' title="<?php echo _('Day') ?>"><?php echo _('D') ?></button>
-            <button class='btn graph_time' type='button' time='7' title="<?php echo _('Week') ?>"><?php echo _('W') ?></button>
-            <button class='btn graph_time' type='button' time='30' title="<?php echo _('Month') ?>"><?php echo _('M') ?></button>
-            <button class='btn graph_time' type='button' time='365' title="<?php echo _('Year') ?>"><?php echo _('Y') ?></button>
+            <button class='btn graph_time' type='button' data-time='1' title="<?php echo _('Day') ?>"><?php echo _('D') ?></button>
+            <button class='btn graph_time' type='button' data-time='7' title="<?php echo _('Week') ?>"><?php echo _('W') ?></button>
+            <button class='btn graph_time' type='button' data-time='30' title="<?php echo _('Month') ?>"><?php echo _('M') ?></button>
+            <button class='btn graph_time' type='button' data-time='365' title="<?php echo _('Year') ?>"><?php echo _('Y') ?></button>
             <button id='graph_zoomin' class='btn' title="<?php echo _('Zoom In') ?>">+</button>
             <button id='graph_zoomout' class='btn' title="<?php echo _('Zoom Out') ?>">-</button>
             <button id='graph_left' class='btn' title="<?php echo _('Earlier') ?>"><</button>
