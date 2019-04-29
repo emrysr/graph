@@ -357,7 +357,7 @@ function graph_init_editor()
         var feedid = $(this).data("feedid");
         $('.feed-select-left[data-feedid="' + feedid + '"]').click();
     });
-    $("body").on("click",".feed-select-left",function(){
+    $("body").on("click",".feed-select-left",function(e){
         var feedid = $(this).data("feedid");
         var checked = $(this)[0].checked;
         var feed_from_group = false;
