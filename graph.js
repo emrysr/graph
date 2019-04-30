@@ -1237,8 +1237,8 @@ function graph_draw()
             var quality = Math.round(100 * (1-(feedlist[z].stats.npointsnull/feedlist[z].stats.npoints)));
             out += "<td>"+quality+"% ("+(feedlist[z].stats.npoints-feedlist[z].stats.npointsnull)+"/"+feedlist[z].stats.npoints+")</td>";
             var dp = feedlist[z].dp;
-            out += "<td>"+feedlist[z].stats.minval.toFixed(dp)+"</td>";
-            out += "<td>"+feedlist[z].stats.maxval.toFixed(dp)+"</td>";
+            if(!isNaN(Number(feedlist[z].stats.minval))) out += "<td>"+feedlist[z].stats.minval.toFixed(dp)+"</td>";
+            if(!isNaN(Number(feedlist[z].stats.maxval))) out += "<td>"+feedlist[z].stats.maxval.toFixed(dp)+"</td>";
             out += "<td>"+feedlist[z].stats.diff.toFixed(dp)+"</td>";
             out += "<td>"+feedlist[z].stats.mean.toFixed(dp)+"</td>";
             out += "<td>"+feedlist[z].stats.stdev.toFixed(dp)+"</td>";
