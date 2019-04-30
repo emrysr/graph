@@ -68,7 +68,11 @@ function graph_controller()
     }
     
     else if ($group && $route->action=="groupgraph") {
-        $result = view("Modules/graph/view.php", array("session" => $session["write"], 'group_support' => 1));
+        if($session['read']) {
+            $result = view("Modules/graph/view.php", array("session" => $session["write"], 'group_support' => 1));
+        }else{
+            return sprintf('<div class="alert alert-danger mt-3"><a href="%suser/login" class="text-danger">Login Required</a></div>',$path);
+        }
     }
     // Download data
     else if ($route->action === 'download') {

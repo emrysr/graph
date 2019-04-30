@@ -2016,8 +2016,8 @@ function load_feed_selector() {
                 }
             });
         }
-        if (feedlist[z].yaxis==1) { $(".feed-select-left[data-feedid="+feedid+"]")[0].checked = true; $(".tagbody[data-tag='"+tag+"']").show(); }
-        if (feedlist[z].yaxis==2) { $(".feed-select-right[data-feedid="+feedid+"]")[0].checked = true; $(".tagbody[data-tag='"+tag+"']").show(); }
+        if (feedlist[z].yaxis==1) { $(".feed-select-left[data-feedid="+feedid+"]").prop('checked',true); $(".tagbody[data-tag='"+tag+"']").show(); }
+        if (feedlist[z].yaxis==2) { $(".feed-select-right[data-feedid="+feedid+"]").prop('checked',true); $(".tagbody[data-tag='"+tag+"']").show(); }
     }
 }
 
