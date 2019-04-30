@@ -1046,7 +1046,7 @@ function group_legend_values(_flot, placeholder) {
     output += build_rows(left);
     output += '      </ul>';
     output += '    </div>';
-    output += '    <div class="col right">';
+    output += '    <div class="col right mr-2">';
     output += '      <ul class="unstyled">';
     output += build_rows(right);
     output += '      </ul>';
