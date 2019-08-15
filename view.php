@@ -44,7 +44,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
 <link href="<?php echo $path; ?>Modules/graph/graph.css?v=<?php echo $v; ?>" rel="stylesheet">
 
-<div id="page-content-wrapper" style="max-width:1280px">
+<div id="page-content-wrapper">
     <h3><?php echo _('Data viewer'); ?></h3>
     <div id="error" style="display:none"></div>
 

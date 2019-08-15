@@ -11,7 +11,6 @@
 
     global $path, $embed;
     global $fullwidth;
-    $fullwidth = true;
     
     $userid = 0;
     if (isset($_GET['userid'])) $userid = (int) $_GET['userid'];

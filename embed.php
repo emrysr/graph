@@ -11,7 +11,6 @@
 
     global $path, $embed;
     global $fullwidth;
-    $fullwidth = true;
     
     $graphid = get("graphid");
     
