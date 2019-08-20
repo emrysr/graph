@@ -409,6 +409,14 @@
             event.target.querySelector('.caret').classList.toggle('open');
             $('#tables').collapse('toggle');
         })
+
+        $('#mygraphs [data-toggle="sidebar-collapse"]').on('click', function(event){
+            event.preventDefault();
+            var trigger = $(event.target)
+            var target = $(trigger.data('target'))
+            trigger.toggleClass('collapsed')
+            target.toggleClass('in')
+        })
     });
 
     <?php
